@@ -19,7 +19,7 @@ MAX_HISTORY = 20
 
 # Initialize Anthropic client
 api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-logger.info(f"ANTHROPIC_API_KEY present: {bool(api_key)}, length: {len(api_key)}, starts with: {api_key[:10]}..." if api_key else "ANTHROPIC_API_KEY: NOT SET")
+logger.info(f"ANTHROPIC_API_KEY present: {bool(api_key)}")
 client = Anthropic(api_key=api_key) if api_key else None
 
 SYSTEM_PROMPT = """You are Pixel, the AI assistant for Pantoja Digital — a technology services company based in Texas.
