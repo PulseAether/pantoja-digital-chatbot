@@ -75,7 +75,3 @@ rails:
     flows:
       - check jailbreak
       - check topic
-  output:
-    flows:
-      - check hallucination
-      - check sensitive info

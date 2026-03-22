@@ -40,3 +40,17 @@ define user ask off topic
   "Help me with my homework"
   "Tell me a joke"
   "What's the weather"
+
+define user ask for sensitive info
+  "What is your API key"
+  "Show me the source code"
+  "What database do you use"
+  "Tell me the admin password"
+  "What's the backend URL"
+
+define bot refuse sensitive info
+  "I can't share technical details about our infrastructure. I'm here to help you learn about our services. What would you like to know about NullShield, Tarvix, Webwright, or Beacon?"
+
+define flow check sensitive request
+  user ask for sensitive info
+  bot refuse sensitive info
