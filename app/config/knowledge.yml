@@ -1,0 +1,99 @@
+# Pantoja Digital Knowledge Base
+
+company:
+  name: Pantoja Digital
+  tagline: "Technology services for modern businesses"
+  location: Texas
+  website: https://pantojadigital.com
+  email: team@pantojadigital.com
+  contact_form: https://pantojadigital.com/contact
+  quote_form: https://pantojadigital.com/quote
+
+booking:
+  availability:
+    weekdays: "Mon-Fri 12-1pm & 5-8pm CST"
+    saturday: "9am-5pm CST"
+    sunday: "Closed"
+  link: https://pantojadigital.com/contact
+
+services:
+  nullshield:
+    name: NullShield
+    category: AI Security Testing
+    color: RED
+    description: "Tests AI chatbots, websites, APIs for 500+ vulnerability patterns"
+    compliance: "OWASP, PCI DSS, SOC 2 compliance mapping"
+    tiers:
+      - name: Quick Scan
+        price: "$750 one-time"
+      - name: Full Scan
+        price: "$2,500 one-time"
+        note: "Most clients start here"
+      - name: Monthly Monitoring
+        price: "$299/mo"
+        note: "Requires initial Full Scan"
+      - name: Quarterly Monitoring
+        price: "$199/mo"
+        note: "Requires initial Full Scan"
+      - name: Fix Add-On
+        price: "$150-500/vulnerability"
+
+  tarvix:
+    name: Tarvix
+    category: Custom AI Agents
+    color: BLUE
+    description: "Chatbots, voice agents, email agents, workflow automation"
+    note: "Every agent gets a NullShield security scan before delivery"
+    tiers:
+      - name: DFY Agent Build
+        price: "$500 setup + $149/mo"
+      - name: Premium Build
+        price: "$1,000 setup + $199/mo"
+      - name: Enterprise
+        price: "$2,500+ setup + $349/mo"
+
+  webwright:
+    name: Webwright
+    category: Web Development
+    color: ORANGE
+    description: "Every build includes free NullShield scan + basic SEO"
+    tiers:
+      - name: Starter
+        price: "$3,000"
+        description: "5-7 page marketing site"
+      - name: Business
+        price: "$5,000"
+        description: "10-20 pages, blog, CMS"
+      - name: E-Commerce
+        price: "$8,000-15,000"
+        description: "Full store, payments, inventory"
+      - name: Enterprise
+        price: "$10,000+"
+        description: "Quote-based"
+      - name: Monthly Hosting
+        price: "$49-149/mo"
+
+  beacon:
+    name: Beacon
+    category: SEO Optimization
+    color: GREEN
+    description: "Basic SEO included free with every Webwright build"
+    tiers:
+      - name: SEO Audit
+        price: "$750 one-time"
+      - name: Launch Package
+        price: "$1,500"
+        description: "Full initial setup"
+      - name: Monthly SEO
+        price: "$399/mo"
+
+bundles:
+  - name: The Full Build
+    includes: "Webwright + Beacon + NullShield scan"
+    price: "$4,500 setup"
+  - name: The AI Site
+    includes: "Webwright + Tarvix + NullShield"
+    price: "$3,500 setup + $149/mo"
+  - name: The Everything Package
+    includes: "All services"
+    price: "$6,000 setup + $847/mo"
