@@ -50,7 +50,25 @@ async def chat(request: ChatRequest):
             messages=history
         )
 
-        assistant_message = result.get("content", result) if isinstance(result, dict) else str(result)
+        # NeMo Guardrails returns either:
+        # - a dict with "content" key
+        # - a dict with "role" and "content" keys  
+        # - a list of message dicts
+        # - a string directly
+        assistant_message = ""
+        if isinstance(result, dict):
+            assistant_message = result.get("content", "")
+        elif isinstance(result, list):
+            # Get the last assistant message from the list
+            for msg in reversed(result):
+                if isinstance(msg, dict) and msg.get("role") == "assistant":
+                    assistant_message = msg.get("content", "")
+                    break
+        elif isinstance(result, str):
+            assistant_message = result
+        
+        if not assistant_message:
+            assistant_message = "I'm here to help with Pantoja Digital's services — security testing, AI agents, web development, and SEO. What would you like to know?"
 
         # Add assistant response to history
         history.append({"role": "assistant", "content": assistant_message})
@@ -60,4 +78,7 @@ async def chat(request: ChatRequest):
             session_id=session_id
         )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Chat error: {str(e)}")
+        return ChatResponse(
+            response="I'm having trouble right now. You can reach our team at team@pantojadigital.com or visit pantojadigital.com/contact. How else can I help?",
+            session_id=session_id
+        )
