@@ -1,11 +1,15 @@
 import os
 import uuid
+import logging
 from typing import Optional
 from collections import defaultdict
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from nemoguardrails import RailsConfig, LLMRails
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -50,16 +54,22 @@ async def chat(request: ChatRequest):
             messages=history
         )
 
-        # NeMo Guardrails returns either:
-        # - a dict with "content" key
-        # - a dict with "role" and "content" keys  
-        # - a list of message dicts
-        # - a string directly
+        logger.info(f"NeMo result type: {type(result)}")
+        logger.info(f"NeMo result value: {result}")
+
+        # NeMo Guardrails generate_async returns a dict with "content" key
         assistant_message = ""
         if isinstance(result, dict):
             assistant_message = result.get("content", "")
+            if not assistant_message:
+                # Try nested structures
+                messages = result.get("messages", [])
+                if messages:
+                    for msg in reversed(messages):
+                        if msg.get("role") == "assistant":
+                            assistant_message = msg.get("content", "")
+                            break
         elif isinstance(result, list):
-            # Get the last assistant message from the list
             for msg in reversed(result):
                 if isinstance(msg, dict) and msg.get("role") == "assistant":
                     assistant_message = msg.get("content", "")
