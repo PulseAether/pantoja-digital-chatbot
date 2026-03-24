@@ -100,9 +100,10 @@ async def add_security_headers(request: Request, call_next):
         if header in response.headers:
             del response.headers[header]
     
-    # Don't cache chat responses
-    if "/api/chat" in str(request.url.path):
-        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate"
+    # Don't cache ANY responses — this is an API, nothing should be cached
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     
     return response
 
