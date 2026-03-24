@@ -41,12 +41,23 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         self.requests: dict[str, list[float]] = defaultdict(list)
 
     async def dispatch(self, request: Request, call_next):
-        # Skip rate limiting for health check
-        if request.url.path == "/health":
-            return await call_next(request)
-
         client_ip = request.headers.get("x-forwarded-for", request.client.host if request.client else "unknown")
         now = time.time()
+
+        # Health endpoint gets a more generous limit (60 req/min for uptime monitors)
+        if request.url.path == "/health":
+            health_key = f"health:{client_ip}"
+            self.requests[health_key] = [
+                t for t in self.requests[health_key]
+                if now - t < self.window_seconds
+            ]
+            if len(self.requests[health_key]) >= 60:
+                return JSONResponse(
+                    status_code=429,
+                    content={"error": "Too many requests."}
+                )
+            self.requests[health_key].append(now)
+            return await call_next(request)
         
         # Clean old requests
         self.requests[client_ip] = [
@@ -76,6 +87,14 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = "default-src 'none'"
+    response.headers["X-XSS-Protection"] = "0"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    
+    # Suppress proxy disclosure headers
+    for header in ["Via", "X-Powered-By", "Server"]:
+        if header in response.headers:
+            del response.headers[header]
     
     # Don't cache chat responses
     if "/api/chat" in str(request.url.path):

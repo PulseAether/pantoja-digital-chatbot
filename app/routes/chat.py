@@ -1,11 +1,12 @@
 import os
+import re
 import uuid
 import logging
 from typing import Optional
 from collections import defaultdict
 
-from fastapi import APIRouter
-from pydantic import BaseModel
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, field_validator
 from anthropic import Anthropic
 
 logging.basicConfig(level=logging.INFO)
@@ -125,9 +126,48 @@ def check_input_guardrails(message: str) -> Optional[str]:
     return None
 
 
+# NoSQL injection operators to reject — NullShield finding: NoSQL injection attempts
+NOSQL_OPERATORS = re.compile(
+    r'\$(?:gt|gte|lt|lte|ne|eq|in|nin|regex|where|exists|not|or|and|nor|elemMatch|size|type|mod|all)',
+    re.IGNORECASE,
+)
+
+# Maximum allowed message length
+MAX_MESSAGE_LENGTH = 1000
+
+
+def sanitize_message(message: str) -> str:
+    """Validate and sanitize chat message input.
+    
+    Raises HTTPException if message contains NoSQL operators or embedded JSON objects.
+    Truncates messages exceeding MAX_MESSAGE_LENGTH.
+    """
+    if not message or not message.strip():
+        raise HTTPException(status_code=400, detail="Message cannot be empty.")
+    
+    # Reject messages containing MongoDB/NoSQL operators
+    if NOSQL_OPERATORS.search(message):
+        raise HTTPException(status_code=400, detail="Invalid characters in message.")
+    
+    # Reject messages with embedded JSON-like objects (curly braces with colons)
+    if re.search(r'\{[^}]*:[^}]*\}', message):
+        raise HTTPException(status_code=400, detail="Invalid message format.")
+    
+    # Enforce max length
+    if len(message) > MAX_MESSAGE_LENGTH:
+        message = message[:MAX_MESSAGE_LENGTH]
+    
+    return message.strip()
+
+
 class ChatRequest(BaseModel):
     message: str
     session_id: Optional[str] = None
+
+    @field_validator("message")
+    @classmethod
+    def validate_message(cls, v: str) -> str:
+        return sanitize_message(v)
 
 
 class ChatResponse(BaseModel):
