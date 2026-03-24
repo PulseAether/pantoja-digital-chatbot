@@ -127,10 +127,8 @@ def check_input_guardrails(message: str) -> Optional[str]:
 
 
 # NoSQL injection operators to reject — NullShield finding: NoSQL injection attempts
-NOSQL_OPERATORS = re.compile(
-    r'\$(?:gt|gte|lt|lte|ne|eq|in|nin|regex|where|exists|not|or|and|nor|elemMatch|size|type|mod|all)',
-    re.IGNORECASE,
-)
+# Aggressive: block ANY string containing a $ followed by a letter (MongoDB operator pattern)
+NOSQL_PATTERN = re.compile(r'\$[a-zA-Z]')
 
 # Maximum allowed message length
 MAX_MESSAGE_LENGTH = 1000
@@ -145,8 +143,8 @@ def sanitize_message(message: str) -> str:
     if not message or not message.strip():
         raise HTTPException(status_code=400, detail="Message cannot be empty.")
     
-    # Reject messages containing MongoDB/NoSQL operators
-    if NOSQL_OPERATORS.search(message):
+    # Reject messages containing ANY MongoDB/NoSQL-style operator ($letter)
+    if NOSQL_PATTERN.search(message):
         raise HTTPException(status_code=400, detail="Invalid characters in message.")
     
     # Reject messages with embedded JSON-like objects (curly braces with colons)

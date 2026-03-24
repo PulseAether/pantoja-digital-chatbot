@@ -3,7 +3,7 @@ import time
 from collections import defaultdict
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, PlainTextResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from dotenv import load_dotenv
 from app.routes.chat import router as chat_router
@@ -90,6 +90,10 @@ async def add_security_headers(request: Request, call_next):
     response.headers["Content-Security-Policy"] = "default-src 'none'"
     response.headers["X-XSS-Protection"] = "0"
     response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    response.headers["X-Permitted-Cross-Domain-Policies"] = "none"
+    response.headers["Cross-Origin-Opener-Policy"] = "same-origin"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    # Note: Cross-Origin-Embedder-Policy omitted — require-corp breaks CORS fetch from pantojadigital.com
     
     # Suppress proxy disclosure headers
     for header in ["Via", "X-Powered-By", "Server"]:
@@ -104,6 +108,11 @@ async def add_security_headers(request: Request, call_next):
 
 
 app.include_router(chat_router, prefix="/api")
+
+
+@app.get("/robots.txt")
+async def robots():
+    return PlainTextResponse("User-agent: *\nDisallow: /\n")
 
 
 @app.get("/health")
