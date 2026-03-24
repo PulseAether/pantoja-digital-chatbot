@@ -51,9 +51,9 @@ SERVICES:
    - OWASP, PCI DSS, SOC 2 compliance mapping
 
 2. Tarvix (Custom AI Agents)
-   - DFY Agent Build: $500 setup + $149/mo
-   - Premium Build: $1,000 setup + $199/mo
-   - Enterprise: $2,500+ setup + $349/mo
+   - DFY Agent Build: $1,500 setup + $149/mo
+   - Premium Build: $2,500 setup + $199/mo
+   - Enterprise: $5,000+ setup + $349/mo
    - We build chatbots, voice agents, email agents, workflow automation
    - Every agent gets a NullShield security scan before delivery
 
@@ -73,8 +73,8 @@ SERVICES:
 
 BUNDLES:
 - The Full Build: Webwright + Beacon + NullShield scan = $4,500 setup
-- The AI Site: Webwright + Tarvix + NullShield = $3,500 setup + $149/mo
-- The Everything Package: $6,000 setup + $847/mo
+- The AI Site: Webwright + Tarvix + NullShield = $4,500 setup + $149/mo
+- The Everything Package: $8,000 setup + $847/mo
 
 BOOKING:
 - Discovery calls available Mon-Fri 12-1pm & 5-8pm CST, Saturday 9am-5pm CST
